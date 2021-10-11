@@ -14,11 +14,8 @@ import ohos.global.resource.NotExistException;
 import ohos.global.resource.RawFileEntry;
 import ohos.global.resource.Resource;
 import ohos.global.resource.WrongTypeException;
-import ohos.global.resource.solidxml.TypedAttribute;
 import ohos.media.image.ImageSource;
 import ohos.media.image.PixelMap;
-import ohos.media.image.common.PixelFormat;
-import ohos.media.image.common.Size;
 import ohos.multimodalinput.event.TouchEvent;
 
 import java.io.ByteArrayOutputStream;
@@ -49,7 +46,7 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
     // Activity context
     private Context context;
     // Density factor
-    private final float densityFactor = getContext().getResourceManager().getDeviceCapability().screenDensity;
+    private final float densityFactor = (getContext().getResourceManager().getDeviceCapability().screenDensity/160);
     //getResources().getDisplayMetrics().density;
     // Variable for getting the dimension height or width, whichever is smaller
     private int smallerDimension;
@@ -128,18 +125,18 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
     private boolean startFading = false;
 
 
-    public EmojiReactionView(Context context) throws NotExistException, WrongTypeException, IOException {
+    public EmojiReactionView(Context context) {
         super(context);
         System.out.println("EMOJIREACT : EmojiReactionView constructor context");
         init();
     }
 
-    public EmojiReactionView(Context context, AttrSet attrs) throws NotExistException, WrongTypeException, IOException {
+    public EmojiReactionView(Context context, AttrSet attrs) {
         this(context, attrs, 0);
         System.out.println("EMOJIREACT : EmojiReactionView constructor context attrs");
     }
 
-    public EmojiReactionView(Context context, AttrSet attrs, int defStyle) throws NotExistException, WrongTypeException, IOException {
+    public EmojiReactionView(Context context, AttrSet attrs, int defStyle) {
         super(context, attrs, String.valueOf(defStyle));
         System.out.println("EMOJIREACT : EmojiReactionView constructor context attrs defstyle");
         this.context = context;
@@ -148,7 +145,7 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
         init();
     }
 
-    final void initBaseXMLAttrs(Context context, AttrSet attrSet) throws NotExistException, WrongTypeException, IOException {
+    final void initBaseXMLAttrs(Context context, AttrSet attrSet) {
         System.out.println("EMOJIREACT : EmojiReactionView initBaseXMLAttrs");
         System.out.println("EMOJIREACT : EmojiReactionView initBaseXMLAttrs attributes : " + attrSet.getLength());
 
@@ -199,12 +196,13 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
             } else throw new IllegalArgumentException("clickedEmojiNumber out of range");
 
         this.clickedEmojiNumber = clickedEmojiNumber;
-        Optional<PixelMap> p = null;
+        //Optional<PixelMap> p = null;
         // Get the Emoji to be displayed in PixelMap
         if(emojiPixelMap == null) emojiPixelMap = new PixelMap[numberOfEmojis];
-        if (clickedEmojiNumber != -1 && emojiPixelMap[clickedEmojiNumber] == null)
-            p = getPixelMapFromId(emojiId.get(clickedEmojiNumber), panelEmojiSide);
+        if (clickedEmojiNumber != -1 && emojiPixelMap[clickedEmojiNumber] == null) {
+            Optional<PixelMap> p = getPixelMapFromId(emojiId.get(clickedEmojiNumber), panelEmojiSide);
             emojiPixelMap[clickedEmojiNumber] = p.orElse(null);
+        }
         this.invalidate();
     }
 
@@ -304,7 +302,7 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
         this.mClickInterface = l;
     }
 
-    private void init() throws NotExistException, WrongTypeException, IOException {
+    private void init() {
         System.out.println("EMOJIREACT EmojiReactionView init");
         addDrawTask(this);
         setTouchEventListener(this);
@@ -323,9 +321,9 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
     }
 
     private void setup() {
-        System.out.println("EMOJIREACT EmojiReactionView setup");
+        System.out.println("Meghna EmojiReactionView setup");
         if (emojiId == null) {
-            System.out.println("EMOJIREACT EmojiReactionView setup emoji null");
+            System.out.println("Meghna EmojiReactionView setup 1");
             return;
         }
         if (numberOfEmojis == 0) {
@@ -333,18 +331,18 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
             panelAnimWorking = false;
             clickingAnimWorking = false;
             emojiRising = false;
-            System.out.println("EMOJIREACT EmojiReactionView setup emoji number 0");
+            System.out.println("Meghna EmojiReactionView setup 2");
             return;
         }
 
         if (getWidth() == 0 && getHeight() == 0) {
-            System.out.println("EMOJIREACT EmojiReactionView setup width =0 or height = 0");
+            System.out.println("Meghna EmojiReactionView setup 3");
             return;
         } else {
-            smallerDimension = getHeight() > getWidth() ? getWidth() : getHeight();
-            System.out.println("EMOJIREACT EmojiReactionView setup " + smallerDimension);
+            smallerDimension = Math.min(getHeight(), getWidth());
+            System.out.println("Meghna EmojiReactionView setup 4");
         }
-        System.out.println("EMOJIREACT EmojiReactionView setup 2");
+        System.out.println("Meghna EmojiReactionView setup 5");
 
         // set emojisRisingHeight based on user data
         if (emojisRisingHeightGiven == -2) {
@@ -352,7 +350,7 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
         } else if (emojisRisingHeightGiven <= 0 && emojisRisingHeightGiven >= -1) {
             emojisRisingHeight = getHeight() - (int) (emojisRisingHeightGiven * getHeight());
         }
-        System.out.println("EMOJIREACT EmojiReactionView setup 2 ");
+        System.out.println("Meghna init");
         setHomeRect();
         setPathPanel();
 
@@ -367,14 +365,19 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
         } else {
             homeCenter[1] = (int) (getHeight() - homeCenterYGiven);
         }
-        System.out.println("EMOJIREACT EmojiReactionView setHomeRect 2 ");
+        System.out.println("Meghna setHomeRect");
 
-        Optional<PixelMap> p = null;
         // Set the homePixelMap with the default PixelMap
         // use R.drawable.home to access or modify it
-        if (homePixelMap == null)
-            p = getPixelMapFromId(ResourceTable.Media_emoji1, homeSide);
+        if (homePixelMap == null) {
+            Optional<PixelMap> p = getPixelMapFromId(ResourceTable.Media_home, homeSide);
+            if(p==null) {
+                System.out.println("Meghna p is null");
+            } else {
+                System.out.println("Meghna p is not null");
+            }
             homePixelMap = p.orElse(null);
+        }
         // Set the home Rect
         homeRect = new Rect((homeCenter[0] - homeSide / 2), (homeCenter[1] - homeSide / 2), (homeCenter[0] + homeSide / 2), (homeCenter[1] + homeSide / 2));
         System.out.println("EMOJIREACT EmojiReactionView setHomeRect 3 ");
@@ -430,13 +433,13 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
     public void onDraw(Component component, Canvas canvas) {
         //super.onDraw(component, canvas);
 
-        if (homeEmojiVisible)
+        if (homeEmojiVisible) {
             // To make home emoji visible
-            if (clickedEmojiNumber == -1){
+            if (clickedEmojiNumber == -1) {
                 PixelMapHolder pixelMapHolder = new PixelMapHolder(homePixelMap);
-                canvas.drawPixelMapHolderRect(pixelMapHolder, new RectFloat(homeRect),null);
+                canvas.drawPixelMapHolderRect(pixelMapHolder, new RectFloat(homeRect), new Paint());
             }
-            else{
+        } else{
                 PixelMapHolder pixelMapHolder = new PixelMapHolder(emojiPixelMap[clickedEmojiNumber]);
                 canvas.drawPixelMapHolderRect(pixelMapHolder, new RectFloat(homeRect),null);
             }
@@ -844,7 +847,7 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
     public boolean onTouchEvent(Component component, TouchEvent event) {
         // respond to touch events
         int index = event.getIndex();
-        if (event.getAction() == DragEvent.DRAG_DROP) {
+        if (event.getAction() == TouchEvent.PRIMARY_POINT_DOWN) {
             // prepare for new gesture
             wasSwiping = false;
             emojiClicked = false;
@@ -862,11 +865,11 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
                 }
             }
             return true;
-        } else if (!wasSwiping && event.getAction() == DragEvent.DRAG_MOVE) {
+        } else if (!wasSwiping && event.getAction() == TouchEvent.POINT_MOVE) {
             // swiping gesture detected
             wasSwiping = true;
 
-        } else if (event.getAction() == DragEvent.DRAG_MOVE || event.getAction() == DragEvent.DRAG_FINISH) {
+        } else if (event.getAction() == TouchEvent.PRIMARY_POINT_UP || event.getAction() == TouchEvent.CANCEL) {
             if (wasSwiping && !emojiClicked) {
                 // gesture ends with homeEmoji visible
                 panelAnimWorking = false;
@@ -944,8 +947,7 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
         return (Math.pow(x - emojiMovingPoint[clickedEmojiNumber][0], 2) + Math.pow(y - emojiMovingPoint[clickedEmojiNumber][1], 2) <= Math.pow(clickedRadius, 2));
     }
 
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) throws NotExistException, WrongTypeException, IOException {
-        //super.onSizeChanged(w, h, oldw, oldh);
+    protected void onSizeChanged(int w, int h) {
         setup();
     }
 
@@ -1015,7 +1017,7 @@ public class EmojiReactionView extends Image implements Component.DrawTask, Comp
         try {
             Resource asset = assetManager.openRawFile();
             ImageSource source = ImageSource.create(asset, options);
-            return Optional.of(source.createPixelmap(0,decodingOptions));
+            return Optional.ofNullable(source.createPixelmap(decodingOptions));
         } catch (IOException e) {
             e.printStackTrace();
         }
